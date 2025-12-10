@@ -1,3 +1,4 @@
+import 'package:dev_cards/l10n/app_localizations.dart';
 // ignore_for_file: deprecated_member_use
 
 import 'dart:async';
@@ -56,9 +57,9 @@ class _DeckSelectionScreenState extends State<DeckSelectionScreen>
       } else {
         _snapBack();
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("¡La banca está llena!"),
-            duration: Duration(milliseconds: 500),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.deck_full),
+            duration: const Duration(milliseconds: 500),
           ),
         );
       }
@@ -197,155 +198,159 @@ class _DeckSelectionScreenState extends State<DeckSelectionScreen>
   Widget build(BuildContext context) {
     // final size = MediaQuery.of(context).size; // Unused
 
-    return Scaffold(
-      backgroundColor: Colors.black,
-      body: Stack(
-        children: [
-          const Positioned.fill(child: StadiumBackground(animate: false)),
-          SafeArea(
-            child: Column(
-              children: [
-                AppBar(
-                  backgroundColor: Colors.transparent,
-                  elevation: 0,
-                  actions: [
-                    if (bench.length == 3)
-                      Padding(
-                        padding: const EdgeInsets.only(right: 16),
-                        child: Row(
-                          children: [
-                            Text("EMPEZAR PARTIDA"),
-                            SizedBox(width: 10),
-                            FloatingActionButton.small(
-                              backgroundColor: Colors.cyanAccent,
-                              onPressed: _startGame,
-                              child: const Icon(
-                                Icons.play_arrow,
-                                color: Colors.black,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                  ],
-                ),
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
+        backgroundColor: Colors.black,
+        body: Stack(
+          children: [
+            const Positioned.fill(child: StadiumBackground(animate: false)),
+            SafeArea(
+              child: Column(
+                children: [
+                  // Zona Principal (Card Stack)
+                  Expanded(
+                    child: Center(
+                      child: _upcomingCards.isEmpty
+                          ? const CircularProgressIndicator()
+                          : Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                // Cartas de Fondo (Efecto Stack - Boca Abajo)
+                                ...List.generate(min(6, _upcomingCards.length - 1), (
+                                  index,
+                                ) {
+                                  // Invertimos el orden para pintar de atrás hacia adelante
+                                  final reversedIndex =
+                                      min(6, _upcomingCards.length - 1) -
+                                      1 -
+                                      index;
 
-                // Zona Principal (Card Stack)
-                Expanded(
-                  child: Center(
-                    child: _upcomingCards.isEmpty
-                        ? const CircularProgressIndicator()
-                        : Stack(
-                            alignment: Alignment.center,
-                            children: [
-                              // Cartas de Fondo (Efecto Stack - Boca Abajo)
-                              ...List.generate(min(6, _upcomingCards.length - 1), (
-                                index,
-                              ) {
-                                // Invertimos el orden para pintar de atrás hacia adelante
-                                final reversedIndex =
-                                    min(6, _upcomingCards.length - 1) -
-                                    1 -
-                                    index;
+                                  // Cálculo de escala y offset visual (más apretado)
+                                  final scale = 0.9 - (reversedIndex * 0.05);
+                                  // Offset Y reducido para que sea "más corto"
+                                  final yOffset = 15.0 * (reversedIndex + 1);
 
-                                // Cálculo de escala y offset visual (más apretado)
-                                final scale = 0.9 - (reversedIndex * 0.05);
-                                // Offset Y reducido para que sea "más corto"
-                                final yOffset = 15.0 * (reversedIndex + 1);
+                                  return Transform.translate(
+                                    offset: Offset(0, yOffset),
+                                    child: Transform.scale(
+                                      scale: scale,
+                                      child:
+                                          const MiniCardBack(), // Carta boca abajo
+                                    ),
+                                  );
+                                }),
 
-                                return Transform.translate(
-                                  offset: Offset(0, yOffset),
-                                  child: Transform.scale(
-                                    scale: scale,
-                                    child:
-                                        const MiniCardBack(), // Carta boca abajo
+                                // Carta Actual (Draggable)
+                                GestureDetector(
+                                  onPanUpdate: _handlePanUpdate,
+                                  onPanEnd: _handlePanEnd,
+                                  child: Transform.translate(
+                                    offset: _dragOffset,
+                                    child: Transform.rotate(
+                                      angle: _dragRotation,
+                                      child: PokemonStyleCard(
+                                        card: _upcomingCards[0],
+                                      ),
+                                    ),
                                   ),
-                                );
-                              }),
+                                ),
+                              ],
+                            ),
+                    ),
+                  ),
 
-                              // Carta Actual (Draggable)
-                              GestureDetector(
-                                onPanUpdate: _handlePanUpdate,
-                                onPanEnd: _handlePanEnd,
-                                child: Transform.translate(
-                                  offset: _dragOffset,
-                                  child: Transform.rotate(
-                                    angle: _dragRotation,
-                                    child: PokemonStyleCard(
-                                      card: _upcomingCards[0],
+                  if (bench.length < 3)
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        AppLocalizations.of(context)!.instructions_deck,
+                        style: const TextStyle(color: Colors.white70),
+                      ),
+                    ),
+                  if (bench.length == 3)
+                    Padding(
+                      padding: const EdgeInsets.only(right: 16),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(AppLocalizations.of(context)!.start_game),
+                          SizedBox(width: 10),
+                          FloatingActionButton.small(
+                            backgroundColor: Colors.cyanAccent,
+                            onPressed: _startGame,
+                            child: const Icon(
+                              Icons.play_arrow,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                  // Banca
+                  Container(
+                    height: 220,
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    decoration: BoxDecoration(
+                      color: Colors.black45,
+                      border: Border(
+                        top: BorderSide(color: Colors.white.withOpacity(0.1)),
+                      ),
+                    ),
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: List.generate(3, (index) {
+                          if (index < bench.length) {
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 5,
+                              ),
+                              child: GestureDetector(
+                                onTap: () {}, //_removeFromBench(index),
+                                child: PokemonStyleCard(
+                                  card: bench[index],
+                                  isSmall: true,
+                                ),
+                              ),
+                            );
+                          } else {
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 5,
+                              ),
+                              child: GestureDetector(
+                                onTap: _addToBench,
+                                child: Container(
+                                  width: 130,
+                                  height: 200,
+                                  decoration: BoxDecoration(
+                                    border: Border.all(color: Colors.white24),
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                  child: const Center(
+                                    child: Icon(
+                                      Icons.add,
+                                      color: Colors.white24,
+                                      size: 40,
                                     ),
                                   ),
                                 ),
                               ),
-                            ],
-                          ),
-                  ),
-                ),
-
-                if (bench.length < 3)
-                  const Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Text(
-                      "Desliza ABAJO para elegir, LADO para descartar",
-                      style: TextStyle(color: Colors.white70),
+                            );
+                          }
+                        }),
+                      ),
                     ),
                   ),
-
-                // Banca
-                Container(
-                  height: 180,
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  decoration: BoxDecoration(
-                    color: Colors.black45,
-                    border: Border(
-                      top: BorderSide(color: Colors.white.withOpacity(0.1)),
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: List.generate(3, (index) {
-                      if (index < bench.length) {
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 5),
-                          child: GestureDetector(
-                            onTap: () {}, //_removeFromBench(index),
-                            child: PokemonStyleCard(
-                              card: bench[index],
-                              isSmall: true,
-                            ),
-                          ),
-                        );
-                      } else {
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 5),
-                          child: GestureDetector(
-                            onTap: _addToBench,
-                            child: Container(
-                              width: 130,
-                              height: 200,
-                              decoration: BoxDecoration(
-                                border: Border.all(color: Colors.white24),
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                              child: const Center(
-                                child: Icon(
-                                  Icons.add,
-                                  color: Colors.white24,
-                                  size: 40,
-                                ),
-                              ),
-                            ),
-                          ),
-                        );
-                      }
-                    }),
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

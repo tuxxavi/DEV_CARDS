@@ -7,6 +7,8 @@ class GameManager {
   static List<GameCard> allCardsMaster = [];
   static List<GameCard> userAlbum = [];
   static const String _albumKey = 'user_album_ids';
+  static const String _langKey = 'user_language';
+  static String currentLocale = 'en';
 
   static Future<void> initialize() async {
     if (allCardsMaster.isEmpty) {
@@ -14,8 +16,13 @@ class GameManager {
       allCardsMaster = jsonList.map((json) => GameCard.fromJson(json)).toList();
     }
 
-    // Load album
+    // Load album & language
     final prefs = await SharedPreferences.getInstance();
+
+    // Language
+    currentLocale = prefs.getString(_langKey) ?? 'en';
+
+    // Album
     final List<String>? savedIds = prefs.getStringList(_albumKey);
 
     if (savedIds != null) {
@@ -33,6 +40,12 @@ class GameManager {
   static Future<void> addToAlbum(List<GameCard> newCards) async {
     userAlbum.addAll(newCards);
     await _saveAlbum();
+  }
+
+  static Future<void> setLocale(String code) async {
+    currentLocale = code;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_langKey, code);
   }
 
   static Future<void> _saveAlbum() async {

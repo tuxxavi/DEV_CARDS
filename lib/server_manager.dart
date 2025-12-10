@@ -15,25 +15,48 @@ class ServerManager {
   static int _port = 4040; // Default port
 
   static Future<String?> getIpAddress() async {
-    final info = NetworkInfo();
-    var wifiIP = await info.getWifiIP();
-    if (wifiIP != null) return wifiIP;
+    // On Android/iOS, try NetworkInfo first (WiFi IP)
+    if (Platform.isAndroid || Platform.isIOS) {
+      final info = NetworkInfo();
+      try {
+        var wifiIP = await info.getWifiIP();
+        if (wifiIP != null && wifiIP.isNotEmpty) return wifiIP;
+      } catch (e) {
+        print("Error fetching Wifi IP: $e");
+      }
+    }
 
-    // Fallback using dart:io
+    // Fallback using dart:io - Robust detection for Linux/Desktop
     try {
       final interfaces = await NetworkInterface.list(
         type: InternetAddressType.IPv4,
       );
+
+      String? bestIp;
+      String? fallbackIp;
+
       for (var interface in interfaces) {
-        // Filter out loopback and likely internal interfaces
-        if (interface.name.toLowerCase().contains('wlan') ||
-            interface.name.toLowerCase().contains('eth') ||
-            interface.name.toLowerCase().contains('en0')) {
-          return interface.addresses.first.address;
+        print("Found interface: ${interface.name}");
+        for (var addr in interface.addresses) {
+          print("  - IP: ${addr.address}");
+          // Strict priority for 192.168.x.x (Home LAN)
+          if (addr.address.startsWith('192.168.')) {
+            return addr.address;
+          }
+          // Secondary priority: 172.x or 10.x (could be VPN, Docker, etc)
+          // But we prefer to avoid 10.0.2.x (Emulator/NAT often) if possible
+          if (!addr.isLoopback && !addr.address.startsWith('127.')) {
+            if (bestIp == null && !addr.address.startsWith('10.0.2.')) {
+              bestIp = addr.address;
+            }
+            fallbackIp ??= addr.address;
+          }
         }
       }
-      return interfaces.firstOrNull?.addresses.first.address;
+
+      return bestIp ?? fallbackIp;
     } catch (e) {
+      print("Error detecting IP: $e");
       return null;
     }
   }

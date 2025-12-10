@@ -71,13 +71,127 @@ class GameCard {
       case 'cloud':
         return Icons.cloud_queue;
       case 'flash':
-        return Icons.flash_on;
+        return Icons.flash_on; // Also for Thunderbolt, Laser
       case 'shield':
-        return Icons.security;
+        return Icons.security; // Also for Rust Armor, Typescript
       case 'noodle':
         return Icons.gesture;
+      case 'code':
+        return Icons.code;
+      case 'fire':
+        return Icons.local_fire_department;
+      case 'wifi':
+        return Icons.wifi;
+      case 'security':
+        return Icons.security;
+      case 'branch':
+        return Icons.call_split; // Git Merge
+      case 'link':
+        return Icons.link; // Blockchain
+      case 'plane':
+        return Icons.flight;
+      case 'snow':
+        return Icons.ac_unit; // Penguin
+      case 'delete':
+        return Icons.delete;
+      case 'error':
+        return Icons.error;
+      case 'desktop': // Blue Screen
+        return Icons.desktop_windows;
+      case 'science':
+        return Icons.science; // React Atom
+      case 'database':
+        return Icons.storage; // SQL
+      case 'brain':
+        return Icons.psychology; // Neural Net
+      case 'mask':
+        return Icons.privacy_tip; // Incognito, Hacker
+      case 'cookie':
+        return Icons.donut_small; // Cookie (approx)
+      case 'moon':
+        return Icons.dark_mode;
+      case 'keyboard':
+        return Icons.keyboard;
+      case 'key':
+        return Icons.vpn_key;
+      case 'layers':
+        return Icons.layers; // Stack Overflow
+      case 'loop': // Infinite Loop
+        return Icons.loop;
+      case 'target': // Sniper
+        return Icons.gps_fixed;
+      case 'grid': // Pixel Art, CSS Grid
+        return Icons.grid_on;
+      case 'water': // Liquid Cooling
+        return Icons.water_drop;
+      case 'satellite':
+        return Icons.satellite_alt;
+      case 'skull': // Virus
+        return Icons.dangerous;
+      case 'mouse': // Pointer
+        return Icons.mouse;
+      case 'duck':
+        return Icons.pets; // Rubber Duck
+      case 'hook':
+        return Icons.phishing; // Phishing
+      case 'sun':
+        return Icons.wb_sunny;
+      case 'fan':
+        return Icons.wind_power; // Turbine
+      case 'server':
+        return Icons.dns; // Mainframe
+      case 'chip':
+        return Icons.memory;
+      case 'lock':
+        return Icons.lock; // VPN
+      case 'bluetooth':
+        return Icons.bluetooth;
+      case 'money':
+        return Icons.attach_money; // Ransomware
+      case 'heart':
+        return Icons.favorite; // Open Source
+      case 'dino':
+        return Icons.warning; // T-Rex
+      case 'terminal': // CLI, Sudo
+        return Icons.terminal;
+      case 'box': // Zip Bomb, Sandbox
+        return Icons.inbox;
+      case 'robot': // Captcha
+        return Icons.smart_toy;
+      case 'atom': // Quantum Bit
+        return Icons.science;
+      case 'pickaxe': // Mining
+        return Icons.construction;
+      case 'save': // Floppy
+        return Icons.save;
+      case 'cloud_rain': // Leaking
+        return Icons.cloud_download;
+      case 'mail': // Spam
+        return Icons.mail;
+      case 'run': // Agile
+        return Icons.directions_run;
+      case 'anchor': // Deep Web
+        return Icons.anchor;
+      case 'cassette': // Backup Tape
+        return Icons.radio;
+      case 'battery': // Wireless Charge
+        return Icons.battery_charging_full;
+      case 'ping': // Ping Pong
+        return Icons.network_ping;
+      case 'split': // Fork
+        return Icons.call_split;
+      case 'cable': // Fiber
+        return Icons.cable;
+      case 'drop': // Leak
+        return Icons.water_drop;
+      case 'bomb': // Zero Day
+        return Icons.dangerous;
+      case 'hat': // White Hat
+        return Icons.school;
+      case 'hand': // Hello World
+        return Icons.waving_hand;
       default:
-        return Icons.help_outline;
+        return Icons.style;
     }
   }
 

@@ -1,3 +1,4 @@
+import 'package:dev_cards/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:dev_cards/card_detail3_d_dialog.dart';
 import 'package:dev_cards/game_manager.dart';
@@ -12,7 +13,7 @@ class AlbumScreen extends StatelessWidget {
     if (cols < 2) cols = 2;
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Mi Colección"),
+        title: Text(AppLocalizations.of(context)!.my_collection),
         backgroundColor: Colors.transparent,
       ),
       body: GameManager.userAlbum.isEmpty
@@ -26,9 +27,9 @@ class AlbumScreen extends StatelessWidget {
                     color: Colors.grey[800],
                   ),
                   const SizedBox(height: 20),
-                  const Text(
-                    "Sin cartas aún.",
-                    style: TextStyle(color: Colors.grey),
+                  Text(
+                    AppLocalizations.of(context)!.no_cards_yet,
+                    style: const TextStyle(color: Colors.grey),
                   ),
                 ],
               ),

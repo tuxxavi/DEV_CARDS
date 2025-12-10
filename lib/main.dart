@@ -1,7 +1,9 @@
 // ignore_for_file: deprecated_member_use
 
+import 'package:dev_cards/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:dev_cards/album_screen.dart';
 import 'package:dev_cards/deck_selection_screen.dart';
 import 'package:dev_cards/game_manager.dart';
@@ -23,24 +25,127 @@ void main() async {
   runApp(const IoFlipApp());
 }
 
+final ValueNotifier<Locale> localeNotifier = ValueNotifier(
+  Locale(GameManager.currentLocale),
+);
+
 class IoFlipApp extends StatelessWidget {
   const IoFlipApp({super.key});
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'IO Flip Pro',
-      theme: ThemeData.dark().copyWith(
-        scaffoldBackgroundColor: const Color(0xFF050505),
-        colorScheme: const ColorScheme.dark(primary: Colors.cyanAccent),
-      ),
-      home: const MainMenuScreen(),
+    return ValueListenableBuilder<Locale>(
+      valueListenable: localeNotifier,
+      builder: (context, locale, child) {
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          title: 'IO Flip Pro',
+          locale: locale,
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [
+            Locale('en'), // English (Default)
+            Locale('es'), // Spanish
+            Locale('ca'), // Catalan
+          ],
+          theme: ThemeData.dark().copyWith(
+            scaffoldBackgroundColor: const Color(0xFF050505),
+            colorScheme: const ColorScheme.dark(primary: Colors.cyanAccent),
+          ),
+          home: const MainMenuScreen(),
+        );
+      },
     );
   }
 }
 
 class MainMenuScreen extends StatelessWidget {
   const MainMenuScreen({super.key});
+
+  void _changeLanguage(String code) {
+    GameManager.setLocale(code);
+    localeNotifier.value = Locale(code);
+  }
+
+  void _showSettingsDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        return AlertDialog(
+          backgroundColor: Colors.grey[900],
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+            side: BorderSide(color: Colors.cyanAccent.withOpacity(0.5)),
+          ),
+          title: Text(
+            AppLocalizations.of(context)!.settings,
+            style: const TextStyle(color: Colors.white),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                AppLocalizations.of(context)!.language,
+                style: const TextStyle(color: Colors.white70),
+              ),
+              const SizedBox(height: 10),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                decoration: BoxDecoration(
+                  color: Colors.grey[800],
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.cyanAccent.withOpacity(0.5)),
+                ),
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton<String>(
+                    dropdownColor: Colors.grey[800],
+                    value: GameManager.currentLocale,
+                    isExpanded: true,
+                    style: const TextStyle(color: Colors.white, fontSize: 16),
+                    iconEnabledColor: Colors.cyanAccent,
+                    onChanged: (val) {
+                      if (val != null) {
+                        _changeLanguage(val);
+                        Navigator.pop(ctx);
+                      }
+                    },
+                    items: const [
+                      DropdownMenuItem(
+                        value: 'en',
+                        child: Row(children: [Text("🇬🇧  English")]),
+                      ),
+                      DropdownMenuItem(
+                        value: 'es',
+                        child: Row(children: [Text("🇪🇸  Español")]),
+                      ),
+                      DropdownMenuItem(
+                        value: 'ca',
+                        child: Row(children: [Text("🏴  Català")]),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text(
+                "OK",
+                style: TextStyle(color: Colors.cyanAccent),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,6 +154,17 @@ class MainMenuScreen extends StatelessWidget {
           const Positioned.fill(child: StadiumBackground(animate: false)),
           // Partículas ambientales sutiles en el menú
           const Positioned.fill(child: AmbientParticles()),
+
+          // Settings Button (Top Right)
+          Positioned(
+            top: 40,
+            right: 20,
+            child: IconButton(
+              icon: const Icon(Icons.settings, color: Colors.white, size: 30),
+              onPressed: () => _showSettingsDialog(context),
+            ),
+          ),
+
           Center(
             child: SingleChildScrollView(
               child: Column(
@@ -67,9 +183,9 @@ class MainMenuScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  const Text(
-                    "NEON FLIP",
-                    style: TextStyle(
+                  Text(
+                    AppLocalizations.of(context)!.title,
+                    style: const TextStyle(
                       fontSize: 40,
                       fontWeight: FontWeight.w900,
                       letterSpacing: 2,
@@ -91,7 +207,7 @@ class MainMenuScreen extends StatelessWidget {
                     alignment: WrapAlignment.center,
                     children: [
                       _MenuButton(
-                        label: "COMBATE",
+                        label: AppLocalizations.of(context)!.combat,
                         icon: Icons.snowboarding_sharp,
                         color: Colors.redAccent,
                         onTap: () => Navigator.push(
@@ -102,7 +218,7 @@ class MainMenuScreen extends StatelessWidget {
                         ),
                       ),
                       _MenuButton(
-                        label: "ONLINE 1VS1",
+                        label: AppLocalizations.of(context)!.online,
                         icon: Icons.wifi,
                         color: Colors.purpleAccent,
                         onTap: () => Navigator.push(
@@ -113,7 +229,8 @@ class MainMenuScreen extends StatelessWidget {
                         ),
                       ),
                       _MenuButton(
-                        label: "ÁLBUM (${GameManager.userAlbum.length})",
+                        label:
+                            "${AppLocalizations.of(context)!.album} (${GameManager.userAlbum.length})",
                         icon: Icons.collections_bookmark,
                         color: Colors.blueAccent,
                         onTap: () => Navigator.push(

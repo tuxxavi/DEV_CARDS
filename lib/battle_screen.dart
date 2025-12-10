@@ -4,6 +4,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:dev_cards/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:dev_cards/const.dart';
 import 'package:dev_cards/destructible_widget.dart';
@@ -72,11 +73,13 @@ class _BattleScreenState extends State<BattleScreen>
       TweenSequenceItem(tween: Tween(begin: 10.0, end: 0.0), weight: 1),
     ]).animate(_clashShakeController);
 
-    _startNewGame();
-    if (widget.isOnline) {
-      _serverSub = ServerManager.onData.listen(_handleOnlineMessage);
-      _startOnlineRound();
-    }
+    Future.delayed(Duration.zero, () {
+      _startNewGame();
+      if (widget.isOnline) {
+        _serverSub = ServerManager.onData.listen(_handleOnlineMessage);
+        _startOnlineRound();
+      }
+    });
   }
 
   void _startOnlineRound() {
@@ -195,7 +198,10 @@ class _BattleScreenState extends State<BattleScreen>
       _checkOnlineResolution();
     } else {
       // Offline Logic
-      setState(() => battleLog = "Invocando ${playerCard.name}...");
+      setState(
+        () => battleLog =
+            "${AppLocalizations.of(context)!.summoning} ${playerCard.name}...",
+      );
       await Future.delayed(const Duration(milliseconds: 600));
       final random = Random();
       if (cpuHand.isEmpty) {
@@ -239,16 +245,17 @@ class _BattleScreenState extends State<BattleScreen>
 
     if (pPower > cPower) {
       playerScore++;
-      resultLog = "¡GANASTE LA RONDA! ${bonus ? '(Bonus)' : ''}";
+      resultLog =
+          "${AppLocalizations.of(context)!.won_round} ${bonus ? '(${AppLocalizations.of(context)!.bonus})' : ''}";
       flashColor = Colors.green.withOpacity(0.5);
       loserId = cpuActiveCard!.instanceId;
     } else if (cPower > pPower) {
       cpuScore++;
-      resultLog = "RONDA PERDIDA...";
+      resultLog = AppLocalizations.of(context)!.lost_round;
       flashColor = Colors.red.withOpacity(0.5);
       loserId = playerActiveCard!.instanceId;
     } else {
-      resultLog = "EMPATE";
+      resultLog = AppLocalizations.of(context)!.draw;
       flashColor = Colors.blue.withOpacity(0.3);
     }
 
@@ -297,71 +304,68 @@ class _BattleScreenState extends State<BattleScreen>
   Widget build(BuildContext context) {
     final isLandscape =
         MediaQuery.of(context).orientation == Orientation.landscape;
-    return Scaffold(
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        title: AnimatedContainer(
-          duration: const Duration(milliseconds: 300),
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-          decoration: BoxDecoration(
-            color: _arenaFlashColor == Colors.transparent
-                ? Colors.black54
-                : _arenaFlashColor,
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: Colors.white24),
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
+        extendBodyBehindAppBar: true,
+        appBar: AppBar(
+          title: AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+            decoration: BoxDecoration(
+              color: _arenaFlashColor == Colors.transparent
+                  ? Colors.black54
+                  : _arenaFlashColor,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: Colors.white24),
+            ),
+            child: Text(
+              "$playerScore - $cpuScore",
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+            ),
           ),
-          child: Text(
-            "$playerScore - $cpuScore",
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-          ),
+          centerTitle: true,
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          automaticallyImplyLeading: false,
+          actions: [],
         ),
-        centerTitle: true,
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        automaticallyImplyLeading: false,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.exit_to_app),
-            onPressed: () => Navigator.pop(context),
-          ),
-        ],
-      ),
-      body: Stack(
-        children: [
-          const Positioned.fill(child: StadiumBackground(animate: true)),
-          // Capa de flash para el estadio
-          Positioned.fill(
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 500),
-              curve: Curves.easeOut,
-              color: _arenaFlashColor,
+        body: Stack(
+          children: [
+            const Positioned.fill(child: StadiumBackground(animate: true)),
+            // Capa de flash para el estadio
+            Positioned.fill(
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 500),
+                curve: Curves.easeOut,
+                color: _arenaFlashColor,
+              ),
             ),
-          ),
-          // Emisor de partículas de choque
-          ParticleExplosionLayer(triggerStream: _clashExplosionCtrl.stream),
+            // Emisor de partículas de choque
+            ParticleExplosionLayer(triggerStream: _clashExplosionCtrl.stream),
 
-          // CAPA 1: Drag Target (Fondo interactivo)
-          Positioned.fill(
-            child: DragTarget<GameCard>(
-              builder: (context, candidateData, rejectedData) {
-                return Container(color: Colors.transparent);
-              },
-              onWillAccept: (data) =>
-                  !isProcessingTurn && playerActiveCard == null,
-              onAccept: (data) => _playTurn(data),
+            // CAPA 1: Drag Target (Fondo interactivo)
+            Positioned.fill(
+              child: DragTarget<GameCard>(
+                builder: (context, candidateData, rejectedData) {
+                  return Container(color: Colors.transparent);
+                },
+                onWillAccept: (data) =>
+                    !isProcessingTurn && playerActiveCard == null,
+                onAccept: (data) => _playTurn(data),
+              ),
             ),
-          ),
 
-          // CAPA 2: Manos (UI)
-          SafeArea(
-            child: isLandscape
-                ? _buildLandscapeLayout()
-                : _buildPortraitLayout(),
-          ),
-
-          // CAPA 3: Visuales de la Arena (Sobre todo lo demás)
-          Positioned.fill(child: IgnorePointer(child: _buildArenaVisuals())),
-        ],
+            // CAPA 2: Manos (UI)
+            SafeArea(
+              child: isLandscape
+                  ? _buildLandscapeLayout()
+                  : _buildPortraitLayout(),
+            ),
+            // CAPA 3: Visuales de la Arena (Sobre todo lo demás)
+            Positioned.fill(child: IgnorePointer(child: _buildArenaVisuals())),
+          ],
+        ),
       ),
     );
   }
@@ -400,7 +404,7 @@ class _BattleScreenState extends State<BattleScreen>
         alignment: Alignment.center,
         children: [
           Positioned(
-            top: 100, // Ajustado para que no tape el marcador
+            top: 50, // Ajustado para que no tape el marcador
             child: AnimatedSwitcher(
               duration: const Duration(milliseconds: 300),
               transitionBuilder: (child, anim) => FadeTransition(

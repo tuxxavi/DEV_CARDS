@@ -20,10 +20,16 @@ class MiniCardBack extends StatelessWidget {
         ],
       ),
       child: Center(
-        child: Icon(
-          Icons.help_outline,
-          color: Colors.cyanAccent.withOpacity(0.5),
-          size: 40,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.style,
+              color: Colors.cyanAccent.withOpacity(0.5),
+              size: 40,
+            ),
+            Text("NEON FLIP"),
+          ],
         ),
       ),
     );

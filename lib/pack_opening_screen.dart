@@ -3,6 +3,7 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:dev_cards/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:dev_cards/deck_selection_screen.dart';
 import 'package:dev_cards/game_card.dart';
@@ -112,7 +113,9 @@ class _PackOpeningScreenState extends State<PackOpeningScreen>
                   AnimatedSwitcher(
                     duration: const Duration(milliseconds: 500),
                     child: Text(
-                      widget.isVictory ? "¡VICTORIA!" : "FIN DE PARTIDA",
+                      widget.isVictory
+                          ? AppLocalizations.of(context)!.victory
+                          : AppLocalizations.of(context)!.game_over,
                       key: ValueKey(widget.isVictory),
                       style: TextStyle(
                         fontSize: 32,

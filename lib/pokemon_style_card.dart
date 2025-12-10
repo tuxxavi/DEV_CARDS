@@ -1,4 +1,5 @@
 // ignore_for_file: deprecated_member_use
+import 'package:dev_cards/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:dev_cards/const.dart';
 import 'package:dev_cards/game_card.dart';
@@ -43,6 +44,17 @@ class PokemonStyleCard extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
+                Flexible(
+                  child: Text(
+                    card.id,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 8,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
                 Flexible(
                   child: Text(
                     card.name,
@@ -117,9 +129,11 @@ class PokemonStyleCard extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text(
-                    "PODER",
-                    style: TextStyle(
+                  Text(
+                    AppLocalizations.of(
+                      context,
+                    )!.power, // Changed PODER to localized power
+                    style: const TextStyle(
                       color: Colors.black87,
                       fontSize: 10,
                       fontWeight: FontWeight.bold,

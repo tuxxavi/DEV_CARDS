@@ -1,5 +1,6 @@
 // ignore_for_file: deprecated_member_use
 
+import 'package:dev_cards/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:dev_cards/deck_selection_screen.dart';
@@ -36,7 +37,7 @@ class _MultiplayerScreenState extends State<MultiplayerScreen> {
     if (success) {
       if (!mounted) return;
       setState(() {
-        _statusMessage = "¡Conectado! Iniciando...";
+        _statusMessage = AppLocalizations.of(context)!.connected_starting;
         _isLoading = false;
       });
 
@@ -153,14 +154,14 @@ class _MultiplayerScreenState extends State<MultiplayerScreen> {
     return Column(
       children: [
         _BigButton(
-          label: "CREAR PARTIDA",
+          label: AppLocalizations.of(context)!.create_game,
           icon: Icons.wifi_tethering,
           color: Colors.purpleAccent,
           onTap: _startHosting,
         ),
         const SizedBox(height: 30),
         _BigButton(
-          label: "BUSCAR PARTIDA",
+          label: AppLocalizations.of(context)!.search_game,
           icon: Icons.search,
           color: Colors.blueAccent,
           onTap: () {
@@ -176,9 +177,9 @@ class _MultiplayerScreenState extends State<MultiplayerScreen> {
   Widget _buildHostView() {
     return Column(
       children: [
-        const Text(
-          "Tu Clave de Acceso:",
-          style: TextStyle(fontSize: 18, color: Colors.white70),
+        Text(
+          AppLocalizations.of(context)!.your_access_key,
+          style: const TextStyle(fontSize: 18, color: Colors.white70),
         ),
         const SizedBox(height: 10),
         if (_generatedKey != null)
@@ -207,12 +208,20 @@ class _MultiplayerScreenState extends State<MultiplayerScreen> {
                   onPressed: () {
                     Clipboard.setData(ClipboardData(text: _generatedKey!));
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("Clave copiada!")),
+                      SnackBar(
+                        content: Text(AppLocalizations.of(context)!.key_copied),
+                      ),
                     );
                   },
                 ),
               ],
             ),
+          ),
+        const SizedBox(height: 10),
+        if (_generatedKey != null)
+          Text(
+            "IP: ${ServerManager.decodeJoinKey(_generatedKey!)?['ip'] ?? 'Unknown'}",
+            style: const TextStyle(color: Colors.white30, fontSize: 12),
           ),
         const SizedBox(height: 30),
         if (_isLoading)
@@ -221,7 +230,7 @@ class _MultiplayerScreenState extends State<MultiplayerScreen> {
         Text(_statusMessage, style: const TextStyle(color: Colors.white70)),
         const SizedBox(height: 40),
         TextButton.icon(
-          label: const Text("Cancelar"),
+          label: Text(AppLocalizations.of(context)!.cancel),
           icon: const Icon(Icons.cancel),
           style: TextButton.styleFrom(foregroundColor: Colors.redAccent),
           onPressed: _reset,
@@ -233,9 +242,9 @@ class _MultiplayerScreenState extends State<MultiplayerScreen> {
   Widget _buildJoinView() {
     return Column(
       children: [
-        const Text(
-          "Introduce la Clave:",
-          style: TextStyle(fontSize: 18, color: Colors.white70),
+        Text(
+          AppLocalizations.of(context)!.enter_key,
+          style: const TextStyle(fontSize: 18, color: Colors.white70),
         ),
         const SizedBox(height: 10),
         SizedBox(
