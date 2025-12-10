@@ -1,5 +1,6 @@
 // ignore_for_file: deprecated_member_use
 
+import 'package:dev_cards/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 class MiniCardBack extends StatelessWidget {
@@ -28,7 +29,7 @@ class MiniCardBack extends StatelessWidget {
               color: Colors.cyanAccent.withOpacity(0.5),
               size: 40,
             ),
-            Text("NEON FLIP"),
+            Text(AppLocalizations.of(context)!.title),
           ],
         ),
       ),

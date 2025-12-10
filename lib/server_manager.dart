@@ -92,8 +92,17 @@ class ServerManager {
   }
 
   // Host a game
-  static Future<void> startHosting(Function(bool) onConnected) async {
+  static Future<void> startHosting(
+    Function(bool) onConnected, {
+    int retries = 0,
+  }) async {
     stop(); // Close existing
+    if (retries > 10) {
+      print("Failed to bind server after 10 retries.");
+      onConnected(false);
+      return;
+    }
+
     try {
       _server = await HttpServer.bind(InternetAddress.anyIPv4, _port);
       print("Server running on port $_port");
@@ -109,10 +118,10 @@ class ServerManager {
         }
       });
     } catch (e) {
-      print("Error binding server: $e");
+      print("Error binding server on port $_port: $e");
       // Try next port if blocked
       _port++;
-      await startHosting(onConnected);
+      await startHosting(onConnected, retries: retries + 1);
     }
   }
 

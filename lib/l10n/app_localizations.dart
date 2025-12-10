@@ -103,7 +103,7 @@ abstract class AppLocalizations {
   /// No description provided for @title.
   ///
   /// In en, this message translates to:
-  /// **'NEON FLIP'**
+  /// **'DEV CARDS'**
   String get title;
 
   /// No description provided for @combat.
@@ -369,6 +369,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Language'**
   String get language;
+
+  /// No description provided for @starting.
+  ///
+  /// In en, this message translates to:
+  /// **'Starting...'**
+  String get starting;
 
   /// No description provided for @select_language.
   ///

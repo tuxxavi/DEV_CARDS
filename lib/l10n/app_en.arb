@@ -1,5 +1,5 @@
 {
-  "title": "NEON FLIP",
+  "title": "DEV CARDS",
   "combat": "COMBAT",
   "online": "ONLINE 1VS1",
   "album": "ALBUM",
@@ -44,5 +44,6 @@
   "menu": "MENU",
   "settings": "SETTINGS",
   "language": "Language",
+  "starting": "Starting...",
   "select_language": "Select Language"
 }

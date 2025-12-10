@@ -9,7 +9,7 @@ class AppLocalizationsEs extends AppLocalizations {
   AppLocalizationsEs([String locale = 'es']) : super(locale);
 
   @override
-  String get title => 'NEON FLIP';
+  String get title => 'DEV CARDS';
 
   @override
   String get combat => 'COMBATE';
@@ -143,6 +143,9 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get language => 'Idioma';
+
+  @override
+  String get starting => 'Iniciando...';
 
   @override
   String get select_language => 'Elige Idioma';

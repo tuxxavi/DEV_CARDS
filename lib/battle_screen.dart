@@ -1,4 +1,4 @@
-// ignore_for_file: deprecated_member_use, avoid_print
+// ignore_for_file: deprecated_member_use, avoid_print, use_build_context_synchronously
 
 import 'dart:async';
 import 'dart:convert';
@@ -37,24 +37,21 @@ class _BattleScreenState extends State<BattleScreen>
       cpuHand = [];
   GameCard? playerActiveCard, cpuActiveCard;
   int playerScore = 0, cpuScore = 0;
-  String battleLog = "Iniciando...";
+  String battleLog = "";
   bool isProcessingTurn = false;
 
-  // Online vars
   StreamSubscription? _serverSub;
   Timer? _turnTimer;
   int _timeLeft = 5;
   bool _opponentHasPicked = false;
   GameCard? _pendingOpponentCard;
 
-  // Controladores de Animación
   late AnimationController _clashShakeController;
   late Animation<double> _shakeAnim;
-  String? _destroyedCardInstanceId; // Para saber qué carta destruir visualmente
-  Color _arenaFlashColor = Colors.transparent; // Color de feedback del estadio
-  final GlobalKey _arenaKey = GlobalKey(); // Para posicionar partículas
+  String? _destroyedCardInstanceId;
+  Color _arenaFlashColor = Colors.transparent;
+  final GlobalKey _arenaKey = GlobalKey();
 
-  // Controladores de partículas
   final StreamController<Offset> _clashExplosionCtrl =
       StreamController<Offset>.broadcast();
 
@@ -65,7 +62,7 @@ class _BattleScreenState extends State<BattleScreen>
       vsync: this,
       duration: const Duration(milliseconds: 300),
     );
-    // Un shake rápido de izquierda a derecha
+
     _shakeAnim = TweenSequence<double>([
       TweenSequenceItem(tween: Tween(begin: 0.0, end: 10.0), weight: 1),
       TweenSequenceItem(tween: Tween(begin: 10.0, end: -10.0), weight: 1),
@@ -87,7 +84,7 @@ class _BattleScreenState extends State<BattleScreen>
       _timeLeft = 5;
       _opponentHasPicked = false;
       _pendingOpponentCard = null;
-      battleLog = "¡Escoge carta! ($_timeLeft s)";
+      battleLog = "${AppLocalizations.of(context)!.pick_card} ($_timeLeft s)";
       isProcessingTurn = false;
       playerActiveCard = null;
       cpuActiveCard = null;
@@ -99,20 +96,20 @@ class _BattleScreenState extends State<BattleScreen>
       setState(() {
         _timeLeft--;
         if (playerActiveCard == null) {
-          battleLog = "¡Escoge carta! ($_timeLeft s)";
+          battleLog =
+              "${AppLocalizations.of(context)!.pick_card} ($_timeLeft s)";
         }
       });
       if (_timeLeft <= 0) {
         timer.cancel();
         if (playerActiveCard == null && playerHand.isNotEmpty) {
-          _playTurn(playerHand[0]); // Auto-pick
+          _playTurn(playerHand[0]);
         }
       }
     });
   }
 
   void _handleOnlineMessage(String msg) {
-    // msg: {"type":"PICK", "card": {...}}
     try {
       final Map<String, dynamic> data = jsonDecode(msg);
       if (data['type'] == 'PICK') {
@@ -129,20 +126,19 @@ class _BattleScreenState extends State<BattleScreen>
   }
 
   void _checkOnlineResolution() async {
-    // Si ya escogí y el oponente también
     if (playerActiveCard != null && _opponentHasPicked) {
       _turnTimer?.cancel();
       await Future.delayed(const Duration(milliseconds: 500));
       setState(() {
-        // Revelar carta oponente
         cpuActiveCard = _pendingOpponentCard;
-        // Remove fake card from visual hand if we were tracking it,
-        // but strictly we just show deck size.
+
         if (cpuHand.isNotEmpty) cpuHand.removeAt(0);
       });
       _resolveRound();
     } else if (playerActiveCard != null) {
-      setState(() => battleLog = "Esperando al oponente...");
+      setState(
+        () => battleLog = AppLocalizations.of(context)!.waiting_opponent,
+      );
     }
   }
 
@@ -158,22 +154,20 @@ class _BattleScreenState extends State<BattleScreen>
   void _startNewGame() {
     List<GameCard> tempDeck = List.from(GameManager.allCardsMaster);
     tempDeck.shuffle();
-    // Asegurar que CPU tenga cartas
+
     if (tempDeck.length < 6) tempDeck.addAll(tempDeck);
 
     setState(() {
       deck = tempDeck;
-      playerHand = List.from(
-        widget.playerStartingCards,
-      ); // Usar las cartas seleccionadas
+      playerHand = List.from(widget.playerStartingCards);
       initialPlayerHand = List.from(playerHand);
-      cpuHand = deck.take(3).toList(); // CPU toma del mazo aleatorio
+      cpuHand = deck.take(3).toList();
 
       playerActiveCard = null;
       cpuActiveCard = null;
       playerScore = 0;
       cpuScore = 0;
-      battleLog = "¡TU TURNO!";
+      battleLog = AppLocalizations.of(context)!.your_turn;
       isProcessingTurn = false;
       _destroyedCardInstanceId = null;
       _arenaFlashColor = Colors.transparent;
@@ -182,22 +176,20 @@ class _BattleScreenState extends State<BattleScreen>
 
   void _playTurn(GameCard playerCard) async {
     if (isProcessingTurn && !widget.isOnline) return;
-    if (playerActiveCard != null) return; // Already picked
+    if (playerActiveCard != null) return;
 
     setState(() {
-      isProcessingTurn = true; // Block input
+      isProcessingTurn = true;
       playerHand.remove(playerCard);
       playerActiveCard = playerCard;
     });
 
     if (widget.isOnline) {
-      // Send pick
       ServerManager.send(
         jsonEncode({"type": "PICK", "card": playerCard.toJson()}),
       );
       _checkOnlineResolution();
     } else {
-      // Offline Logic
       setState(
         () => battleLog =
             "${AppLocalizations.of(context)!.summoning} ${playerCard.name}...",
@@ -219,16 +211,15 @@ class _BattleScreenState extends State<BattleScreen>
   }
 
   void _resolveRound() async {
-    // 1. Animación de Choque (Shake + Partículas)
     _clashShakeController.forward(from: 0);
-    // Trigger partículas en el centro de la arena
+
     if (_arenaKey.currentContext != null) {
       RenderBox box = _arenaKey.currentContext!.findRenderObject() as RenderBox;
       Offset center = box.localToGlobal(box.size.center(Offset.zero));
-      _clashExplosionCtrl.add(center); // ¡BOOM!
+      _clashExplosionCtrl.add(center);
     }
 
-    await Future.delayed(const Duration(milliseconds: 300)); // Esperar shake
+    await Future.delayed(const Duration(milliseconds: 300));
 
     int pPower = playerActiveCard!.power;
     int cPower = cpuActiveCard!.power;
@@ -236,7 +227,7 @@ class _BattleScreenState extends State<BattleScreen>
         (playerActiveCard!.element == CardElement.fire &&
             cpuActiveCard!.element == CardElement.earth) ||
         (playerActiveCard!.element == CardElement.water &&
-            cpuActiveCard!.element == CardElement.fire); // Ejemplo simplificado
+            cpuActiveCard!.element == CardElement.fire);
     if (bonus) pPower += 30;
 
     String resultLog;
@@ -262,21 +253,19 @@ class _BattleScreenState extends State<BattleScreen>
     setState(() {
       battleLog = resultLog;
       _arenaFlashColor = flashColor;
-      _destroyedCardInstanceId = loserId; // Marcar para destrucción
+      _destroyedCardInstanceId = loserId;
     });
 
-    // 2. Esperar animación de destrucción y feedback
     await Future.delayed(const Duration(milliseconds: 1200));
 
     setState(() {
       _arenaFlashColor = Colors.transparent;
-    }); // Limpiar flash
+    });
 
     if (playerHand.isEmpty) {
       _endGameSequence();
     } else {
       setState(() {
-        // Reset Round
         playerActiveCard = null;
         cpuActiveCard = null;
         isProcessingTurn = false;
@@ -302,8 +291,7 @@ class _BattleScreenState extends State<BattleScreen>
 
   @override
   Widget build(BuildContext context) {
-    final isLandscape =
-        MediaQuery.of(context).orientation == Orientation.landscape;
+    // Ignoramos isLandscape para forzar diseño vertical (mobile-style)
     return PopScope(
       canPop: false,
       child: Scaffold(
@@ -333,7 +321,6 @@ class _BattleScreenState extends State<BattleScreen>
         body: Stack(
           children: [
             const Positioned.fill(child: StadiumBackground(animate: true)),
-            // Capa de flash para el estadio
             Positioned.fill(
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 500),
@@ -341,10 +328,8 @@ class _BattleScreenState extends State<BattleScreen>
                 color: _arenaFlashColor,
               ),
             ),
-            // Emisor de partículas de choque
             ParticleExplosionLayer(triggerStream: _clashExplosionCtrl.stream),
 
-            // CAPA 1: Drag Target (Fondo interactivo)
             Positioned.fill(
               child: DragTarget<GameCard>(
                 builder: (context, candidateData, rejectedData) {
@@ -356,13 +341,7 @@ class _BattleScreenState extends State<BattleScreen>
               ),
             ),
 
-            // CAPA 2: Manos (UI)
-            SafeArea(
-              child: isLandscape
-                  ? _buildLandscapeLayout()
-                  : _buildPortraitLayout(),
-            ),
-            // CAPA 3: Visuales de la Arena (Sobre todo lo demás)
+            SafeArea(child: _buildPortraitLayout()),
             Positioned.fill(child: IgnorePointer(child: _buildArenaVisuals())),
           ],
         ),
@@ -374,10 +353,8 @@ class _BattleScreenState extends State<BattleScreen>
     return Column(
       children: [
         const SizedBox(height: 10),
-        // CPU Hand (Top)
         _buildHandList(cpuHand, false, true),
         const Spacer(),
-        // Player Hand (Bottom)
         Align(
           alignment: Alignment.bottomCenter,
           child: _buildHandList(playerHand, true, true),
@@ -387,26 +364,15 @@ class _BattleScreenState extends State<BattleScreen>
     );
   }
 
-  Widget _buildLandscapeLayout() {
-    return Row(
-      children: [
-        _buildHandList(playerHand, true, false),
-        const Spacer(),
-        _buildHandList(cpuHand, false, false),
-      ],
-    );
-  }
-
   Widget _buildArenaVisuals() {
     final screenWidth = MediaQuery.of(context).size.width;
     final cardWidth = screenWidth * 0.4;
 
     return Container(
-      key: _arenaKey, // Key para encontrar el centro
+      key: _arenaKey,
       child: Stack(
         alignment: Alignment.center,
         children: [
-          // CPU a la IZQUIERDA (Ahora Centrado con ligero offset)
           if (cpuActiveCard != null)
             Align(
               alignment: Alignment.centerLeft,
@@ -434,7 +400,6 @@ class _BattleScreenState extends State<BattleScreen>
               ),
             ),
 
-          // Jugador a la DERECHA (Ahora Centrado con ligero offset)
           if (playerActiveCard != null)
             Align(
               alignment: Alignment.centerRight,
@@ -495,24 +460,19 @@ class _BattleScreenState extends State<BattleScreen>
 
   Widget _buildHandList(List<GameCard> hand, bool isPlayer, bool isHorizontal) {
     double screenWidth = MediaQuery.of(context).size.width;
-    // Calcular ancho para que caban 3 cartas con un poco de margen
-    // Si es landscape/vertical list, usamos ancho fijo.
+
     double cardWidth = isHorizontal ? (screenWidth - 32) / 3 : 130;
 
     return SizedBox(
-      height: isHorizontal
-          ? 220
-          : null, // Aumentamos altura para permitir growth
+      height: isHorizontal ? 220 : null,
       width: isHorizontal ? null : 130,
       child: Center(
-        // Centrar si hay menos cartas (opcional, pero ListView no centra por defecto)
         child: ListView.builder(
           scrollDirection: isHorizontal ? Axis.horizontal : Axis.vertical,
           padding: const EdgeInsets.symmetric(horizontal: 8),
           itemCount: hand.length,
-          shrinkWrap: true, // Para que el Center funcione si hay pocas cartas
-          physics:
-              const ClampingScrollPhysics(), // Evitar scroll innecesario si caben
+          shrinkWrap: true,
+          physics: const ClampingScrollPhysics(),
           itemBuilder: (ctx, i) {
             final cardWidget = isPlayer
                 ? Draggable<GameCard>(
@@ -527,7 +487,7 @@ class _BattleScreenState extends State<BattleScreen>
                     childWhenDragging: Opacity(
                       opacity: 0.5,
                       child: Transform.scale(
-                        scale: 0.75, // Mantener escala visual pequeña en drag
+                        scale: 0.75,
                         child: PokemonStyleCard(card: hand[i], isSmall: true),
                       ),
                     ),
