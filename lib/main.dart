@@ -38,7 +38,7 @@ class IoFlipApp extends StatelessWidget {
       builder: (context, locale, child) {
         return MaterialApp(
           debugShowCheckedModeBanner: false,
-          title: 'IO Flip Pro',
+          title: 'DEV CARDS',
           locale: locale,
           localizationsDelegates: const [
             AppLocalizations.delegate,

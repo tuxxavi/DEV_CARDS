@@ -398,13 +398,72 @@ class _BattleScreenState extends State<BattleScreen>
   }
 
   Widget _buildArenaVisuals() {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final cardWidth = screenWidth * 0.4;
+
     return Container(
       key: _arenaKey, // Key para encontrar el centro
       child: Stack(
         alignment: Alignment.center,
         children: [
+          // CPU a la IZQUIERDA (Ahora Centrado con ligero offset)
+          if (cpuActiveCard != null)
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Padding(
+                padding: const EdgeInsets.only(left: 20.0),
+                child: AnimatedBuilder(
+                  animation: _shakeAnim,
+                  builder: (ctx, child) => Transform.translate(
+                    offset: Offset(_shakeAnim.value, 0),
+                    child: child,
+                  ),
+                  child: SizedBox(
+                    width: cardWidth,
+                    child: FittedBox(
+                      fit: BoxFit.contain,
+                      child: DestructibleWidget(
+                        isDestroyed:
+                            cpuActiveCard!.instanceId ==
+                            _destroyedCardInstanceId,
+                        child: PokemonStyleCard(card: cpuActiveCard!),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+
+          // Jugador a la DERECHA (Ahora Centrado con ligero offset)
+          if (playerActiveCard != null)
+            Align(
+              alignment: Alignment.centerRight,
+              child: Padding(
+                padding: const EdgeInsets.only(right: 20.0),
+                child: AnimatedBuilder(
+                  animation: _shakeAnim,
+                  builder: (ctx, child) => Transform.translate(
+                    offset: Offset(_shakeAnim.value, 0),
+                    child: child,
+                  ),
+                  child: SizedBox(
+                    width: cardWidth,
+                    child: FittedBox(
+                      fit: BoxFit.contain,
+                      child: DestructibleWidget(
+                        isDestroyed:
+                            playerActiveCard!.instanceId ==
+                            _destroyedCardInstanceId,
+                        child: PokemonStyleCard(card: playerActiveCard!),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+
           Positioned(
-            top: 50, // Ajustado para que no tape el marcador
+            bottom: 0,
             child: AnimatedSwitcher(
               duration: const Duration(milliseconds: 300),
               transitionBuilder: (child, anim) => FadeTransition(
@@ -429,55 +488,6 @@ class _BattleScreenState extends State<BattleScreen>
               ),
             ),
           ),
-
-          // CPU a la IZQUIERDA
-          if (cpuActiveCard != null)
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Padding(
-                padding: const EdgeInsets.only(left: 30),
-                child: AnimatedBuilder(
-                  animation: _shakeAnim,
-                  builder: (ctx, child) => Transform.translate(
-                    offset: Offset(_shakeAnim.value, 0),
-                    child: child,
-                  ),
-                  child: DestructibleWidget(
-                    isDestroyed:
-                        cpuActiveCard!.instanceId == _destroyedCardInstanceId,
-                    child: Transform.scale(
-                      scale: 1.2, // Cartas grandes en el choque
-                      child: PokemonStyleCard(card: cpuActiveCard!),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-
-          // Jugador a la DERECHA
-          if (playerActiveCard != null)
-            Align(
-              alignment: Alignment.centerRight,
-              child: Padding(
-                padding: const EdgeInsets.only(right: 30),
-                child: AnimatedBuilder(
-                  animation: _shakeAnim,
-                  builder: (ctx, child) => Transform.translate(
-                    offset: Offset(_shakeAnim.value, 0),
-                    child: child,
-                  ),
-                  child: DestructibleWidget(
-                    isDestroyed:
-                        playerActiveCard!.instanceId ==
-                        _destroyedCardInstanceId,
-                    child: Transform.scale(
-                      scale: 1.2, // Cartas grandes en el choque
-                      child: PokemonStyleCard(card: playerActiveCard!),
-                    ),
-                  ),
-                ),
-              ),
-            ),
         ],
       ),
     );
