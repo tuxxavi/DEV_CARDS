@@ -130,9 +130,7 @@ class PokemonStyleCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    AppLocalizations.of(
-                      context,
-                    )!.power, // Changed PODER to localized power
+                    AppLocalizations.of(context)!.power,
                     style: const TextStyle(
                       color: Colors.black87,
                       fontSize: 10,

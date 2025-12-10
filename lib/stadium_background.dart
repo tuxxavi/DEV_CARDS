@@ -52,10 +52,7 @@ class StadiumBackground extends StatelessWidget {
               ),
             ),
           ),
-          if (animate)
-            Positioned.fill(
-              child: const AmbientParticles(),
-            ), // Partículas ambientales en el estadio
+          if (animate) Positioned.fill(child: const AmbientParticles()),
         ],
       ),
     );
@@ -91,7 +88,7 @@ class StadiumGridPainter extends CustomPainter {
       Paint()
         ..color = Colors.purpleAccent.withOpacity(0.1)
         ..style = PaintingStyle.fill,
-    ); // Centro brillante
+    );
   }
 
   @override

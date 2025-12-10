@@ -18,7 +18,6 @@ class _CardDetail3DDialogState extends State<CardDetail3DDialog> {
 
   @override
   Widget build(BuildContext context) {
-    // Normalizar ángulo para detectar si está de espaldas
     double y = _rotY % (2 * pi);
     if (y < 0) y += 2 * pi;
     bool isBack = y > pi / 2 && y < 3 * pi / 2;
@@ -29,7 +28,6 @@ class _CardDetail3DDialogState extends State<CardDetail3DDialog> {
         setState(() {
           _rotY -= details.delta.dx * 0.01;
           _rotX += details.delta.dy * 0.01;
-          // Limitar rotación vertical (Tilt) "solo un poco"
           _rotX = _rotX.clamp(-0.4, 0.4);
         });
       },
@@ -39,7 +37,7 @@ class _CardDetail3DDialogState extends State<CardDetail3DDialog> {
         child: Container(
           width: double.infinity,
           height: double.infinity,
-          color: Colors.black54, // Fondo semi-transparente
+          color: Colors.black54,
           alignment: Alignment.center,
           child: Transform(
             transform: Matrix4.identity()
@@ -52,7 +50,7 @@ class _CardDetail3DDialogState extends State<CardDetail3DDialog> {
               child: isBack
                   ? Transform(
                       alignment: Alignment.center,
-                      transform: Matrix4.rotationY(pi), // Corregir espejo
+                      transform: Matrix4.rotationY(pi),
                       child: const MiniCardBack(width: 150, height: 230),
                     )
                   : PokemonStyleCard(card: widget.card),

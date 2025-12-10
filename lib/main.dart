@@ -18,9 +18,7 @@ void main() async {
     DeviceOrientation.landscapeLeft,
     DeviceOrientation.landscapeRight,
   ]);
-  SystemChrome.setEnabledSystemUIMode(
-    SystemUiMode.immersiveSticky,
-  ); // Pantalla completa
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
   await GameManager.initialize();
   runApp(const IoFlipApp());
 }
@@ -46,11 +44,7 @@ class IoFlipApp extends StatelessWidget {
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
           ],
-          supportedLocales: const [
-            Locale('en'), // English (Default)
-            Locale('es'), // Spanish
-            Locale('ca'), // Catalan
-          ],
+          supportedLocales: const [Locale('en'), Locale('es'), Locale('ca')],
           theme: ThemeData.dark().copyWith(
             scaffoldBackgroundColor: const Color(0xFF050505),
             colorScheme: const ColorScheme.dark(primary: Colors.cyanAccent),
@@ -142,7 +136,6 @@ class MainMenuScreen extends StatelessWidget {
                   icon: const Icon(Icons.delete_forever),
                   label: Text(AppLocalizations.of(context)!.reset_album),
                   onPressed: () {
-                    // Confirm Dialog
                     showDialog(
                       context: context,
                       builder: (c) => AlertDialog(
@@ -159,9 +152,8 @@ class MainMenuScreen extends StatelessWidget {
                           TextButton(
                             onPressed: () {
                               GameManager.resetAlbum();
-                              Navigator.pop(c); // Close confirm
-                              Navigator.pop(ctx); // Close settings
-                              // Trigger rebuild if possible, but state is static so next load will reflect it.
+                              Navigator.pop(c);
+                              Navigator.pop(ctx);
                             },
                             child: const Text(
                               "CONFIRM",
@@ -196,10 +188,8 @@ class MainMenuScreen extends StatelessWidget {
       body: Stack(
         children: [
           const Positioned.fill(child: StadiumBackground(animate: false)),
-          // Partículas ambientales sutiles en el menú
           const Positioned.fill(child: AmbientParticles()),
 
-          // Settings Button (Top Right)
           Positioned(
             top: 40,
             right: 20,
@@ -245,7 +235,6 @@ class MainMenuScreen extends StatelessWidget {
                     ),
                   ),
 
-                  // RANKING WIDGET
                   const SizedBox(height: 30),
                   Container(
                     padding: const EdgeInsets.symmetric(

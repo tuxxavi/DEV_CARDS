@@ -19,16 +19,12 @@ class GameManager {
       allCardsMaster = jsonList.map((json) => GameCard.fromJson(json)).toList();
     }
 
-    // Load album & language
     final prefs = await SharedPreferences.getInstance();
 
-    // Language
     currentLocale = prefs.getString(_langKey) ?? 'en';
 
-    // Stats
     totalGamesPlayed = prefs.getInt(_gamesKey) ?? 0;
 
-    // Album
     final List<String>? savedIds = prefs.getStringList(_albumKey);
 
     if (savedIds != null) {

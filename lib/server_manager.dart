@@ -12,10 +12,9 @@ class ServerManager {
       StreamController.broadcast();
   static bool get isConnected => _socket != null;
   static Stream<String> get onData => _dataStream.stream;
-  static int _port = 4040; // Default port
+  static int _port = 4040;
 
   static Future<String?> getIpAddress() async {
-    // On Android/iOS, try NetworkInfo first (WiFi IP)
     if (Platform.isAndroid || Platform.isIOS) {
       final info = NetworkInfo();
       try {
@@ -26,7 +25,6 @@ class ServerManager {
       }
     }
 
-    // Fallback using dart:io - Robust detection for Linux/Desktop
     try {
       final interfaces = await NetworkInterface.list(
         type: InternetAddressType.IPv4,
@@ -39,12 +37,9 @@ class ServerManager {
         print("Found interface: ${interface.name}");
         for (var addr in interface.addresses) {
           print("  - IP: ${addr.address}");
-          // Strict priority for 192.168.x.x (Home LAN)
           if (addr.address.startsWith('192.168.')) {
             return addr.address;
           }
-          // Secondary priority: 172.x or 10.x (could be VPN, Docker, etc)
-          // But we prefer to avoid 10.0.2.x (Emulator/NAT often) if possible
           if (!addr.isLoopback && !addr.address.startsWith('127.')) {
             if (bestIp == null && !addr.address.startsWith('10.0.2.')) {
               bestIp = addr.address;
@@ -65,7 +60,6 @@ class ServerManager {
     try {
       List<int> ipParts = ip.split('.').map(int.parse).toList();
       List<int> bytes = [...ipParts, (_port >> 8) & 0xFF, _port & 0xFF];
-      // Base64 encode returns ~8 chars for 6 bytes
       return base64Url.encode(bytes).replaceAll('=', '');
     } catch (e) {
       return "ERROR";
@@ -74,7 +68,6 @@ class ServerManager {
 
   static Map<String, dynamic>? decodeJoinKey(String key) {
     try {
-      // Add padding back if needed for standard decoder, though base64Url usually handles it
       String normalized = key;
       while (normalized.length % 4 != 0) {
         normalized += '=';
@@ -91,12 +84,11 @@ class ServerManager {
     }
   }
 
-  // Host a game
   static Future<void> startHosting(
     Function(bool) onConnected, {
     int retries = 0,
   }) async {
-    stop(); // Close existing
+    stop();
     if (retries > 10) {
       print("Failed to bind server after 10 retries.");
       onConnected(false);
@@ -108,7 +100,6 @@ class ServerManager {
       print("Server running on port $_port");
       _server!.listen((HttpRequest request) async {
         if (request.uri.path == '/ws') {
-          // Upgrade to WebSocket
           var socket = await WebSocketTransformer.upgrade(request);
           print("Client connected");
           _handleConnection(socket, onConnected);
@@ -119,13 +110,11 @@ class ServerManager {
       });
     } catch (e) {
       print("Error binding server on port $_port: $e");
-      // Try next port if blocked
       _port++;
       await startHosting(onConnected, retries: retries + 1);
     }
   }
 
-  // Join a game
   static Future<bool> joinGame(String key, Function(bool) onConnected) async {
     stop();
     var data = decodeJoinKey(key);

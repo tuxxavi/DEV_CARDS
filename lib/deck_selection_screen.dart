@@ -29,7 +29,6 @@ class _DeckSelectionScreenState extends State<DeckSelectionScreen>
   AnimationController? _animController;
 
   void _fillDeck() {
-    // Generar mazo "infinito"
     final random = Random();
     _upcomingCards = List.generate(
       50,
@@ -43,15 +42,12 @@ class _DeckSelectionScreenState extends State<DeckSelectionScreen>
   void _handlePanUpdate(DragUpdateDetails details) {
     setState(() {
       _dragOffset += details.delta;
-      _dragRotation =
-          _dragOffset.dx * 0.001; // Rotación basada en movimiento horizontal
+      _dragRotation = _dragOffset.dx * 0.001;
     });
   }
 
   void _handlePanEnd(DragEndDetails details) {
-    // Lógica de decisión
     if (_dragOffset.dy > 150) {
-      // Swipe Down - Intentar agregar a banca
       if (bench.length < 3) {
         _addToBench();
       } else {
@@ -64,7 +60,6 @@ class _DeckSelectionScreenState extends State<DeckSelectionScreen>
         );
       }
     } else if (_dragOffset.dx.abs() > 100) {
-      // Swipe Left/Right - Descartar
       _discardCard(_dragOffset.dx > 0);
     } else {
       _snapBack();
@@ -75,13 +70,12 @@ class _DeckSelectionScreenState extends State<DeckSelectionScreen>
     setState(() {
       bench.add(_upcomingCards[0]);
       _upcomingCards.removeAt(0);
-      if (_upcomingCards.length < 5) _fillDeck(); // Rellenar
+      if (_upcomingCards.length < 5) _fillDeck();
       _resetPosition();
     });
   }
 
   void _discardCard(bool right) {
-    // Animar salida
     final endX = right ? 500.0 : -500.0;
     _runAnimation(Offset(endX, _dragOffset.dy), () {
       setState(() {
@@ -196,8 +190,6 @@ class _DeckSelectionScreenState extends State<DeckSelectionScreen>
 
   @override
   Widget build(BuildContext context) {
-    // final size = MediaQuery.of(context).size; // Unused
-
     return PopScope(
       canPop: false,
       child: Scaffold(
@@ -208,7 +200,6 @@ class _DeckSelectionScreenState extends State<DeckSelectionScreen>
             SafeArea(
               child: Column(
                 children: [
-                  // Zona Principal (Card Stack)
                   Expanded(
                     child: Center(
                       child: _upcomingCards.isEmpty
@@ -216,32 +207,27 @@ class _DeckSelectionScreenState extends State<DeckSelectionScreen>
                           : Stack(
                               alignment: Alignment.center,
                               children: [
-                                // Cartas de Fondo (Efecto Stack - Boca Abajo)
-                                ...List.generate(min(6, _upcomingCards.length - 1), (
-                                  index,
-                                ) {
-                                  // Invertimos el orden para pintar de atrás hacia adelante
-                                  final reversedIndex =
-                                      min(6, _upcomingCards.length - 1) -
-                                      1 -
-                                      index;
+                                ...List.generate(
+                                  min(6, _upcomingCards.length - 1),
+                                  (index) {
+                                    final reversedIndex =
+                                        min(6, _upcomingCards.length - 1) -
+                                        1 -
+                                        index;
 
-                                  // Cálculo de escala y offset visual (más apretado)
-                                  final scale = 0.9 - (reversedIndex * 0.05);
-                                  // Offset Y reducido para que sea "más corto"
-                                  final yOffset = 15.0 * (reversedIndex + 1);
+                                    final scale = 0.9 - (reversedIndex * 0.05);
+                                    final yOffset = 15.0 * (reversedIndex + 1);
 
-                                  return Transform.translate(
-                                    offset: Offset(0, yOffset),
-                                    child: Transform.scale(
-                                      scale: scale,
-                                      child:
-                                          const MiniCardBack(), // Carta boca abajo
-                                    ),
-                                  );
-                                }),
+                                    return Transform.translate(
+                                      offset: Offset(0, yOffset),
+                                      child: Transform.scale(
+                                        scale: scale,
+                                        child: const MiniCardBack(),
+                                      ),
+                                    );
+                                  },
+                                ),
 
-                                // Carta Actual (Draggable)
                                 GestureDetector(
                                   onPanUpdate: _handlePanUpdate,
                                   onPanEnd: _handlePanEnd,
@@ -288,7 +274,6 @@ class _DeckSelectionScreenState extends State<DeckSelectionScreen>
                       ),
                     ),
 
-                  // Banca
                   Container(
                     height: 220,
                     width: double.infinity,

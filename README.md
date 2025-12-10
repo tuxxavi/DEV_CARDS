@@ -1,4 +1,4 @@
-# DEV CARDS (NEON FLIP)
+# DEV CARDS 
 
 A stylish and fast-paced card battle game built with Flutter. Collect cards, build your deck, and battle against the AI or friends in local network multiplayer!
 

@@ -31,7 +31,6 @@ class _PackOpeningScreenState extends State<PackOpeningScreen>
   List<GameCard> newCards = [];
   late AnimationController _shakeController;
   late Animation<double> _shakeAnim;
-  // Controladores para la revelación secuencial
   late List<bool> _isCardRevealed;
   final StreamController<Offset> _confettiCtrl =
       StreamController<Offset>.broadcast();
@@ -61,7 +60,6 @@ class _PackOpeningScreenState extends State<PackOpeningScreen>
     ]).animate(_shakeController);
 
     if (widget.isVictory) {
-      // Lanzar confeti al inicio si ganó
       Future.delayed(const Duration(milliseconds: 500), () {
         _confettiCtrl.add(MediaQuery.of(context).size.center(Offset.zero));
       });
@@ -81,9 +79,7 @@ class _PackOpeningScreenState extends State<PackOpeningScreen>
       isOpened = true;
       GameManager.addToAlbum(newCards);
     });
-    // Explosión de partículas al abrir
     _confettiCtrl.add(MediaQuery.of(context).size.center(Offset.zero));
-    // Revelar cartas una por una
     for (int i = 0; i < NUM_CARDS_SORPRES; i++) {
       await Future.delayed(const Duration(milliseconds: 400));
       setState(() {
@@ -98,13 +94,9 @@ class _PackOpeningScreenState extends State<PackOpeningScreen>
       backgroundColor: const Color(0xFF101010),
       body: Stack(
         children: [
-          const Positioned.fill(
-            child: AmbientParticles(),
-          ), // Partículas de fondo
+          const Positioned.fill(child: AmbientParticles()),
           if (widget.isVictory)
-            ParticleExplosionLayer(
-              triggerStream: _confettiCtrl.stream,
-            ), // Confeti si gana
+            ParticleExplosionLayer(triggerStream: _confettiCtrl.stream),
           Center(
             child: SingleChildScrollView(
               child: Column(
@@ -214,7 +206,6 @@ class _PackOpeningScreenState extends State<PackOpeningScreen>
                           spacing: 15,
                           runSpacing: 15,
                           children: List.generate(newCards.length, (index) {
-                            // Animación de Flip para cada carta
                             return AnimatedSwitcher(
                               duration: const Duration(milliseconds: 600),
                               transitionBuilder:

@@ -44,7 +44,6 @@ class AlbumScreen extends StatelessWidget {
               ),
               itemCount: GameManager.userAlbum.length,
               itemBuilder: (context, index) {
-                // Animación de entrada escalonada
                 return TweenAnimationBuilder(
                   duration: Duration(
                     milliseconds: 300 + (index * 50).clamp(0, 1000),

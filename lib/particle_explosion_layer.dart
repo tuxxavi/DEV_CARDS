@@ -38,7 +38,6 @@ class _ParticleExplosionLayerState extends State<ParticleExplosionLayer>
   void _explode(Offset origin) {
     particles.clear();
     for (int i = 0; i < 30; i++) {
-      // Generar 30 partículas
       particles.add(_Particle(origin: origin, rnd: _rnd));
     }
     _controller.forward(from: 0);
@@ -89,7 +88,7 @@ class _Particle {
     position += velocity;
     velocity += const Offset(0, 0.2);
     life -= 0.02;
-  } // Gravedad y vida
+  }
 }
 
 class _ParticlePainter extends CustomPainter {
@@ -111,7 +110,6 @@ class _ParticlePainter extends CustomPainter {
   bool shouldRepaint(covariant _ParticlePainter old) => true;
 }
 
-// Partículas ambientales para el menú
 class AmbientParticles extends StatefulWidget {
   const AmbientParticles({super.key});
   @override
@@ -127,7 +125,6 @@ class _AmbientParticlesState extends State<AmbientParticles>
   @override
   void initState() {
     super.initState();
-    // Inicializar algunas partículas
     for (int i = 0; i < 20; i++) {
       _particles.add(_createAmbientParticle());
     }
@@ -139,7 +136,6 @@ class _AmbientParticlesState extends State<AmbientParticles>
       setState(() {
         for (var p in _particles) {
           p.position += p.velocity;
-          // Reiniciar si salen de pantalla (aproximado)
           if (p.position.dy < -50) {
             p.position = Offset(
               p.position.dx,
@@ -152,7 +148,6 @@ class _AmbientParticlesState extends State<AmbientParticles>
   }
 
   _Particle _createAmbientParticle() {
-    // Usamos la clase _Particle existente pero con velocidades muy lentas hacia arriba
     var p = _Particle(
       origin: Offset(_rnd.nextDouble() * 400, _rnd.nextDouble() * 800),
       rnd: _rnd,
@@ -162,7 +157,7 @@ class _AmbientParticlesState extends State<AmbientParticles>
       -_rnd.nextDouble() * 1.0 - 0.2,
     );
     p.color = Colors.cyanAccent.withOpacity(0.2);
-    p.life = 1.0; // Vida infinita en este contexto
+    p.life = 1.0;
     return p;
   }
 
@@ -174,13 +169,9 @@ class _AmbientParticlesState extends State<AmbientParticles>
 
   @override
   Widget build(BuildContext context) {
-    // Reutilizamos el painter, ignorando la vida
     return IgnorePointer(
       child: CustomPaint(
-        painter: _ParticlePainter(
-          particles: _particles,
-          progress: 0,
-        ), // Progress no importa aquí
+        painter: _ParticlePainter(particles: _particles, progress: 0),
       ),
     );
   }

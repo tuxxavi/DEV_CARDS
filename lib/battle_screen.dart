@@ -160,12 +160,10 @@ class _BattleScreenState extends State<BattleScreen>
 
     setState(() {
       deck = tempDeck;
-      // If this is the very first game, set initialPlayerHand from widget.playerStartingCards.
-      // Otherwise, for "Next Level" scenarios, playerHand is refilled from the stored initialPlayerHand.
       if (initialPlayerHand.isEmpty) {
         initialPlayerHand = List.from(widget.playerStartingCards);
       }
-      playerHand = List.from(initialPlayerHand); // Refill player's hand
+      playerHand = List.from(initialPlayerHand);
       cpuHand = deck.take(3).toList();
 
       playerActiveCard = null;
@@ -289,7 +287,6 @@ class _BattleScreenState extends State<BattleScreen>
       GameManager.incrementGamesPlayed();
 
       if (isVictory) {
-        // NEXT LEVEL LOGIC
         showDialog(
           context: context,
           barrierDismissible: false,
@@ -357,8 +354,6 @@ class _BattleScreenState extends State<BattleScreen>
       }
     }
 
-    // Defeat or Online -> End Match (Pack Logic)
-    // Note: Removed implicit addToAlbum to rely on Pack Opening for rewards
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
@@ -370,7 +365,6 @@ class _BattleScreenState extends State<BattleScreen>
 
   @override
   Widget build(BuildContext context) {
-    // Ignoramos isLandscape para forzar diseño vertical (mobile-style)
     return PopScope(
       canPop: false,
       child: Scaffold(
@@ -577,7 +571,6 @@ class _BattleScreenState extends State<BattleScreen>
                   )
                 : const MiniCardBack(width: 130, height: 200);
 
-            // Wrap in a container constrained by screen width
             return Container(
               width: cardWidth,
               padding: const EdgeInsets.symmetric(horizontal: 4),

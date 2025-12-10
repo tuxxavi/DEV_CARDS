@@ -8,7 +8,6 @@ class GameCard {
   final CardElement element;
   final String description;
   final String iconRef;
-  // ID único para instancias en juego (para animaciones de destrucción)
   String instanceId = UniqueKey().toString();
 
   GameCard({
@@ -71,9 +70,9 @@ class GameCard {
       case 'cloud':
         return Icons.cloud_queue;
       case 'flash':
-        return Icons.flash_on; // Also for Thunderbolt, Laser
+        return Icons.flash_on;
       case 'shield':
-        return Icons.security; // Also for Rust Armor, Typescript
+        return Icons.security;
       case 'noodle':
         return Icons.gesture;
       case 'code':
@@ -85,29 +84,29 @@ class GameCard {
       case 'security':
         return Icons.security;
       case 'branch':
-        return Icons.call_split; // Git Merge
+        return Icons.call_split;
       case 'link':
-        return Icons.link; // Blockchain
+        return Icons.link;
       case 'plane':
         return Icons.flight;
       case 'snow':
-        return Icons.ac_unit; // Penguin
+        return Icons.ac_unit;
       case 'delete':
         return Icons.delete;
       case 'error':
         return Icons.error;
-      case 'desktop': // Blue Screen
+      case 'desktop':
         return Icons.desktop_windows;
       case 'science':
-        return Icons.science; // React Atom
+        return Icons.science;
       case 'database':
-        return Icons.storage; // SQL
+        return Icons.storage;
       case 'brain':
-        return Icons.psychology; // Neural Net
+        return Icons.psychology;
       case 'mask':
-        return Icons.privacy_tip; // Incognito, Hacker
+        return Icons.privacy_tip;
       case 'cookie':
-        return Icons.donut_small; // Cookie (approx)
+        return Icons.donut_small;
       case 'moon':
         return Icons.dark_mode;
       case 'keyboard':
@@ -115,80 +114,80 @@ class GameCard {
       case 'key':
         return Icons.vpn_key;
       case 'layers':
-        return Icons.layers; // Stack Overflow
-      case 'loop': // Infinite Loop
+        return Icons.layers;
+      case 'loop':
         return Icons.loop;
-      case 'target': // Sniper
+      case 'target':
         return Icons.gps_fixed;
-      case 'grid': // Pixel Art, CSS Grid
+      case 'grid':
         return Icons.grid_on;
-      case 'water': // Liquid Cooling
+      case 'water':
         return Icons.water_drop;
       case 'satellite':
         return Icons.satellite_alt;
-      case 'skull': // Virus
+      case 'skull':
         return Icons.dangerous;
-      case 'mouse': // Pointer
+      case 'mouse':
         return Icons.mouse;
       case 'duck':
-        return Icons.pets; // Rubber Duck
+        return Icons.pets;
       case 'hook':
-        return Icons.phishing; // Phishing
+        return Icons.phishing;
       case 'sun':
         return Icons.wb_sunny;
       case 'fan':
-        return Icons.wind_power; // Turbine
+        return Icons.wind_power;
       case 'server':
-        return Icons.dns; // Mainframe
+        return Icons.dns;
       case 'chip':
         return Icons.memory;
       case 'lock':
-        return Icons.lock; // VPN
+        return Icons.lock;
       case 'bluetooth':
         return Icons.bluetooth;
       case 'money':
-        return Icons.attach_money; // Ransomware
+        return Icons.attach_money;
       case 'heart':
-        return Icons.favorite; // Open Source
+        return Icons.favorite;
       case 'dino':
-        return Icons.warning; // T-Rex
-      case 'terminal': // CLI, Sudo
+        return Icons.warning;
+      case 'terminal':
         return Icons.terminal;
-      case 'box': // Zip Bomb, Sandbox
+      case 'box':
         return Icons.inbox;
-      case 'robot': // Captcha
+      case 'robot':
         return Icons.smart_toy;
-      case 'atom': // Quantum Bit
+      case 'atom':
         return Icons.science;
-      case 'pickaxe': // Mining
+      case 'pickaxe':
         return Icons.construction;
-      case 'save': // Floppy
+      case 'save':
         return Icons.save;
-      case 'cloud_rain': // Leaking
+      case 'cloud_rain':
         return Icons.cloud_download;
-      case 'mail': // Spam
+      case 'mail':
         return Icons.mail;
-      case 'run': // Agile
+      case 'run':
         return Icons.directions_run;
-      case 'anchor': // Deep Web
+      case 'anchor':
         return Icons.anchor;
-      case 'cassette': // Backup Tape
+      case 'cassette':
         return Icons.radio;
-      case 'battery': // Wireless Charge
+      case 'battery':
         return Icons.battery_charging_full;
-      case 'ping': // Ping Pong
+      case 'ping':
         return Icons.network_ping;
-      case 'split': // Fork
+      case 'split':
         return Icons.call_split;
-      case 'cable': // Fiber
+      case 'cable':
         return Icons.cable;
-      case 'drop': // Leak
+      case 'drop':
         return Icons.water_drop;
-      case 'bomb': // Zero Day
+      case 'bomb':
         return Icons.dangerous;
-      case 'hat': // White Hat
+      case 'hat':
         return Icons.school;
-      case 'hand': // Hello World
+      case 'hand':
         return Icons.waving_hand;
       default:
         return Icons.style;
@@ -200,7 +199,7 @@ class GameCard {
       'id': id,
       'name': name,
       'power': power,
-      'element': element.name, // Enum to string
+      'element': element.name,
       'description': description,
       'icon_ref': iconRef,
     };

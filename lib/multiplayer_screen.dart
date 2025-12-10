@@ -41,7 +41,6 @@ class _MultiplayerScreenState extends State<MultiplayerScreen> {
         _isLoading = false;
       });
 
-      // Delay to show connected message
       Future.delayed(const Duration(seconds: 1), () {
         if (!mounted) return;
         Navigator.pushReplacement(
