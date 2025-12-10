@@ -11,6 +11,7 @@ import 'package:dev_cards/destructible_widget.dart';
 import 'package:dev_cards/game_card.dart';
 import 'package:dev_cards/game_manager.dart';
 import 'package:dev_cards/mini_card_back.dart';
+import 'package:dev_cards/deck_selection_screen.dart';
 import 'package:dev_cards/pack_opening_screen.dart';
 import 'package:dev_cards/particle_explosion_layer.dart';
 import 'package:dev_cards/pokemon_style_card.dart';
@@ -159,8 +160,12 @@ class _BattleScreenState extends State<BattleScreen>
 
     setState(() {
       deck = tempDeck;
-      playerHand = List.from(widget.playerStartingCards);
-      initialPlayerHand = List.from(playerHand);
+      // If this is the very first game, set initialPlayerHand from widget.playerStartingCards.
+      // Otherwise, for "Next Level" scenarios, playerHand is refilled from the stored initialPlayerHand.
+      if (initialPlayerHand.isEmpty) {
+        initialPlayerHand = List.from(widget.playerStartingCards);
+      }
+      playerHand = List.from(initialPlayerHand); // Refill player's hand
       cpuHand = deck.take(3).toList();
 
       playerActiveCard = null;
@@ -279,7 +284,81 @@ class _BattleScreenState extends State<BattleScreen>
 
   void _endGameSequence() {
     bool isVictory = playerScore > cpuScore;
-    if (isVictory) GameManager.addToAlbum(initialPlayerHand);
+
+    if (!widget.isOnline) {
+      GameManager.incrementGamesPlayed();
+
+      if (isVictory) {
+        // NEXT LEVEL LOGIC
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (ctx) => AlertDialog(
+            backgroundColor: Colors.black87,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+              side: const BorderSide(color: Colors.cyanAccent),
+            ),
+            title: Text(
+              AppLocalizations.of(context)!.level_complete,
+              style: const TextStyle(
+                color: Colors.cyanAccent,
+                fontWeight: FontWeight.bold,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.star, color: Colors.yellow, size: 60),
+                const SizedBox(height: 20),
+                Text(
+                  "$playerScore - $cpuScore",
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+            actions: [
+              Center(
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.cyanAccent,
+                    foregroundColor: Colors.black,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 30,
+                      vertical: 15,
+                    ),
+                  ),
+                  onPressed: () {
+                    Navigator.pop(ctx);
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) =>
+                            DeckSelectionScreen(isOnline: widget.isOnline),
+                      ),
+                    );
+                  },
+                  child: Text(
+                    AppLocalizations.of(context)!.next_level,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10),
+            ],
+          ),
+        );
+        return;
+      }
+    }
+
+    // Defeat or Online -> End Match (Pack Logic)
+    // Note: Removed implicit addToAlbum to rely on Pack Opening for rewards
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(

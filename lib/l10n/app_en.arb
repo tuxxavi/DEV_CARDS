@@ -45,5 +45,13 @@
   "settings": "SETTINGS",
   "language": "Language",
   "starting": "Starting...",
-  "select_language": "Select Language"
+  "select_language": "Select Language",
+  "reset_album": "RESET ALBUM",
+  "reset_confirm": "Are you sure? This will delete all your cards.",
+  "ranking": "RANKING",
+  "games_played": "Games Played",
+  "total_power": "Total Power",
+  "score": "Score",
+  "next_level": "NEXT LEVEL",
+  "level_complete": "LEVEL COMPLETE!"
 }

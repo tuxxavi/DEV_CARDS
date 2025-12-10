@@ -381,6 +381,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Select Language'**
   String get select_language;
+
+  /// No description provided for @reset_album.
+  ///
+  /// In en, this message translates to:
+  /// **'RESET ALBUM'**
+  String get reset_album;
+
+  /// No description provided for @reset_confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure? This will delete all your cards.'**
+  String get reset_confirm;
+
+  /// No description provided for @ranking.
+  ///
+  /// In en, this message translates to:
+  /// **'RANKING'**
+  String get ranking;
+
+  /// No description provided for @games_played.
+  ///
+  /// In en, this message translates to:
+  /// **'Games Played'**
+  String get games_played;
+
+  /// No description provided for @total_power.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Power'**
+  String get total_power;
+
+  /// No description provided for @score.
+  ///
+  /// In en, this message translates to:
+  /// **'Score'**
+  String get score;
+
+  /// No description provided for @next_level.
+  ///
+  /// In en, this message translates to:
+  /// **'NEXT LEVEL'**
+  String get next_level;
+
+  /// No description provided for @level_complete.
+  ///
+  /// In en, this message translates to:
+  /// **'LEVEL COMPLETE!'**
+  String get level_complete;
 }
 
 class _AppLocalizationsDelegate

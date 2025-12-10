@@ -148,4 +148,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get select_language => 'Select Language';
+
+  @override
+  String get reset_album => 'RESET ALBUM';
+
+  @override
+  String get reset_confirm => 'Are you sure? This will delete all your cards.';
+
+  @override
+  String get ranking => 'RANKING';
+
+  @override
+  String get games_played => 'Games Played';
+
+  @override
+  String get total_power => 'Total Power';
+
+  @override
+  String get score => 'Score';
+
+  @override
+  String get next_level => 'NEXT LEVEL';
+
+  @override
+  String get level_complete => 'LEVEL COMPLETE!';
 }

@@ -45,5 +45,13 @@
   "settings": "AJUSTES",
   "language": "Idioma",
   "starting": "Iniciando...",
-  "select_language": "Elige Idioma"
+  "select_language": "Elige Idioma",
+  "reset_album": "BORRAR ÁLBUM",
+  "reset_confirm": "¿Seguro? Se borrarán todas tus cartas.",
+  "ranking": "RANKING",
+  "games_played": "Partidas Jugadas",
+  "total_power": "Poder Total",
+  "score": "Puntuación",
+  "next_level": "SIGUIENTE NIVEL",
+  "level_complete": "¡NIVEL COMPLETADO!"
 }

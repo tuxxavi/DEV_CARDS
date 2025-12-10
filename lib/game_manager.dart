@@ -10,6 +10,9 @@ class GameManager {
   static const String _langKey = 'user_language';
   static String currentLocale = 'en';
 
+  static int totalGamesPlayed = 0;
+  static const String _gamesKey = 'games_played';
+
   static Future<void> initialize() async {
     if (allCardsMaster.isEmpty) {
       final List<dynamic> jsonList = json.decode(cardsJsonData);
@@ -22,13 +25,14 @@ class GameManager {
     // Language
     currentLocale = prefs.getString(_langKey) ?? 'en';
 
+    // Stats
+    totalGamesPlayed = prefs.getInt(_gamesKey) ?? 0;
+
     // Album
     final List<String>? savedIds = prefs.getStringList(_albumKey);
 
     if (savedIds != null) {
       userAlbum = savedIds.map((id) {
-        // Find card by ID. If not found (e.g. removed), we might lose it or handle error.
-        // For now, we fallback to first card or ignore.
         return allCardsMaster.firstWhere(
           (c) => c.id == id,
           orElse: () => allCardsMaster[0],
@@ -40,6 +44,28 @@ class GameManager {
   static Future<void> addToAlbum(List<GameCard> newCards) async {
     userAlbum.addAll(newCards);
     await _saveAlbum();
+  }
+
+  static Future<void> incrementGamesPlayed() async {
+    totalGamesPlayed++;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(_gamesKey, totalGamesPlayed);
+  }
+
+  static Future<void> resetAlbum() async {
+    userAlbum.clear();
+    totalGamesPlayed = 0;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_albumKey);
+    await prefs.setInt(_gamesKey, 0);
+  }
+
+  static int get totalPower =>
+      userAlbum.fold(0, (sum, card) => sum + card.power);
+
+  static double get rankingScore {
+    if (totalGamesPlayed == 0) return 0;
+    return totalPower / totalGamesPlayed;
   }
 
   static Future<void> setLocale(String code) async {

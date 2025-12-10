@@ -130,6 +130,50 @@ class MainMenuScreen extends StatelessWidget {
                   ),
                 ),
               ),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.redAccent.withOpacity(0.2),
+                    foregroundColor: Colors.redAccent,
+                    side: const BorderSide(color: Colors.redAccent),
+                  ),
+                  icon: const Icon(Icons.delete_forever),
+                  label: Text(AppLocalizations.of(context)!.reset_album),
+                  onPressed: () {
+                    // Confirm Dialog
+                    showDialog(
+                      context: context,
+                      builder: (c) => AlertDialog(
+                        backgroundColor: Colors.grey[900],
+                        title: Text(AppLocalizations.of(context)!.reset_album),
+                        content: Text(
+                          AppLocalizations.of(context)!.reset_confirm,
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(c),
+                            child: Text(AppLocalizations.of(context)!.cancel),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              GameManager.resetAlbum();
+                              Navigator.pop(c); // Close confirm
+                              Navigator.pop(ctx); // Close settings
+                              // Trigger rebuild if possible, but state is static so next load will reflect it.
+                            },
+                            child: const Text(
+                              "CONFIRM",
+                              style: TextStyle(color: Colors.red),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ),
             ],
           ),
           actions: [
@@ -200,6 +244,69 @@ class MainMenuScreen extends StatelessWidget {
                       letterSpacing: 5,
                     ),
                   ),
+
+                  // RANKING WIDGET
+                  const SizedBox(height: 30),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 10,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.black45,
+                      borderRadius: BorderRadius.circular(15),
+                      border: Border.all(color: Colors.amber, width: 2),
+                    ),
+                    child: Column(
+                      children: [
+                        Text(
+                          AppLocalizations.of(context)!.ranking,
+                          style: const TextStyle(
+                            color: Colors.amber,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 1.5,
+                          ),
+                        ),
+                        const SizedBox(height: 5),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            _RankingItem(
+                              label: AppLocalizations.of(context)!.games_played,
+                              value: "${GameManager.totalGamesPlayed}",
+                            ),
+                            Container(
+                              height: 30,
+                              width: 1,
+                              color: Colors.white24,
+                              margin: const EdgeInsets.symmetric(
+                                horizontal: 15,
+                              ),
+                            ),
+                            _RankingItem(
+                              label: AppLocalizations.of(context)!.total_power,
+                              value: "${GameManager.totalPower}",
+                            ),
+                            Container(
+                              height: 30,
+                              width: 1,
+                              color: Colors.white24,
+                              margin: const EdgeInsets.symmetric(
+                                horizontal: 15,
+                              ),
+                            ),
+                            _RankingItem(
+                              label: AppLocalizations.of(context)!.score,
+                              value: GameManager.rankingScore.toStringAsFixed(
+                                1,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+
                   const SizedBox(height: 60),
                   Wrap(
                     spacing: 20,
@@ -248,6 +355,31 @@ class MainMenuScreen extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _RankingItem extends StatelessWidget {
+  final String label;
+  final String value;
+  const _RankingItem({required this.label, required this.value});
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Text(
+          value,
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+          ),
+        ),
+        Text(
+          label,
+          style: const TextStyle(color: Colors.white54, fontSize: 10),
+        ),
+      ],
     );
   }
 }
